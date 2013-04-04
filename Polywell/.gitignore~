@@ -1,1 +1,10 @@
-bin/
+bin
+
+.settings
+.classpath
+.project
+*.class
+*.jar
+*.war
+*.ear
+.DS_STORE

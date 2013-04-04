@@ -7,3 +7,4 @@ bin
 *.jar
 *.war
 *.ear
+.DS_Store
