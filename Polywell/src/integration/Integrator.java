@@ -2,13 +2,13 @@ package integration;
 
 import com.google.common.base.Function;
 
-import utilities.Pair;
 import utilities.DoubleVector;
+import utilities.Pair;
 
 public class Integrator {
 	public DoubleVector integrate(Function<DoubleVector, DoubleVector> f, Pair<Double, Double>... ranges) {
 		int dim = ranges.length;
-		double gridSteps = 100;
+		double gridSteps = 10;
 		DoubleVector minCoord = new DoubleVector(dim);
 		DoubleVector maxCoord = new DoubleVector(dim);
 		DoubleVector steps = new DoubleVector(dim);
