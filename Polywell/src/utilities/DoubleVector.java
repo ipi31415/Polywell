@@ -6,7 +6,7 @@ import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 public class DoubleVector {
-	private static double EPSILON = 1.0E-2;
+	private static final double EPSILON = 1.0E-7;
 	
 	private final int size;
 	private List<Double> values;
@@ -103,11 +103,38 @@ public class DoubleVector {
 		return result;
 	}
 	
+	public DoubleVector abs() {
+		DoubleVector result = new DoubleVector(size);
+		for (int i = 0; i < size; i++) {
+			result = result.setValue(i, Math.abs(getValue(i)));
+		}
+		return result;
+	}
+	
+	public double max() {
+		double max = Double.NEGATIVE_INFINITY;
+		for (int i = 0; i < size; i++) {
+			max = Math.max(max, getValue(i));
+		}
+		return max;
+ 	}
+	
+	public double min() {
+		double min = Double.POSITIVE_INFINITY;
+		for (int i = 0; i < size; i++) {
+			min = Math.min(min, getValue(i));
+		}
+		return min;
+	}
+	
 	@Override
 	public boolean equals(Object other) {
-		DoubleVector o = (DoubleVector) other;
+		return equals((DoubleVector) other, EPSILON);
+	}
+	
+	public boolean equals(DoubleVector other, double accuracy) {
 		for (int i = 0; i < size; i++) {
-			if (Math.abs(getValue(i) - o.getValue(i)) >= EPSILON) {
+			if (Math.abs(getValue(i) - other.getValue(i)) >= accuracy) {
 				return false;
 			}
 		}

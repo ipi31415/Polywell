@@ -11,9 +11,9 @@ public class Integrator {
 	private static double EPSILON = 1.0E-7;
 	
 	public static DoubleVector integrate(Function<DoubleVector, DoubleVector> f, 
-			List<Pair<Double, Double>> ranges) {
+			List<Pair<Double, Double>> ranges, double accuracy) {
 		int dim = ranges.size();
-		double gridSteps = 10000;
+		double gridSteps = 10;
 		DoubleVector minCoord = new DoubleVector(dim);
 		DoubleVector maxCoord = new DoubleVector(dim);
 		DoubleVector steps = new DoubleVector(dim);
@@ -22,24 +22,35 @@ public class Integrator {
 			maxCoord = maxCoord.setValue(i, ranges.get(i).b);
 			steps = steps.setValue(i, (ranges.get(i).b - ranges.get(i).a) / gridSteps);
 		}
+		DoubleVector prevTotal;
 		DoubleVector total = new DoubleVector(f.apply(minCoord).getSize());
-		DoubleVector coord = minCoord.multiply(1);
-		while (coord.getValue(dim - 1) <= maxCoord.getValue(dim - 1)) {
-			double mult = Math.pow(2, dim - numMinMax(coord, minCoord, maxCoord));
-			DoubleVector value = f.apply(coord).multiply(mult);
-			total = total.add(value);
-			int index = 0;
-			while (index < dim - 1 && coord.getValue(index) >= maxCoord.getValue(index)) {
-				coord = coord.setValue(index, minCoord.getValue(index));
-				index++;
+		do {
+			prevTotal = total.multiply(1);
+			DoubleVector coord = minCoord.multiply(1);
+			while (coord.getValue(dim - 1) <= maxCoord.getValue(dim - 1)) {
+				double mult = Math.pow(2, dim - numMinMax(coord, minCoord, maxCoord));
+				DoubleVector value = f.apply(coord).multiply(mult);
+				total = total.add(value);
+				int index = 0;
+				while (index < dim - 1 && coord.getValue(index) >= maxCoord.getValue(index)) {
+					coord = coord.setValue(index, minCoord.getValue(index));
+					index++;
+				}
+				coord = coord.setValue(index, coord.getValue(index) + steps.getValue(index));
 			}
-			coord = coord.setValue(index, coord.getValue(index) + steps.getValue(index));
-		}
-		double prodSteps = 1 / Math.pow(2, dim);
-		for (int i = 0; i < dim; i++) {
-			prodSteps *= steps.getValue(i);
-		}
-		return total.multiply(prodSteps);
+			double prodSteps = 1 / Math.pow(2, dim);
+			for (int i = 0; i < dim; i++) {
+				prodSteps *= steps.getValue(i);
+			}
+			gridSteps *= 2;
+			steps = new DoubleVector(dim);
+			for (int i = 0; i < dim; i++) {
+				steps = steps.setValue(i, (ranges.get(i).b - ranges.get(i).a) / gridSteps);
+			}
+			total = total.multiply(prodSteps);
+			System.out.println(total);
+		} while (prevTotal.subtract(total).abs().max() > accuracy);
+		return total;
 	}
 	
 	private static int numMinMax(DoubleVector check, DoubleVector min, DoubleVector max) {

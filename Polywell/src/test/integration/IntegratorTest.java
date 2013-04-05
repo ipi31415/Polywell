@@ -1,6 +1,6 @@
 package test.integration;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 
@@ -22,6 +22,22 @@ public class IntegratorTest {
 			}
 		};
 	}
+	
+	public Function<DoubleVector, DoubleVector> getSquareRootFunction() {
+		return new Function<DoubleVector, DoubleVector>() {
+			public DoubleVector apply(DoubleVector x) {
+				return new DoubleVector(Math.sqrt(x.getValue(0)));
+			}
+		};
+	}
+	
+	public Function<DoubleVector, DoubleVector> getVectorFunction() {
+		return new Function<DoubleVector, DoubleVector>() {
+			public DoubleVector apply(DoubleVector x) {
+				return x.multiply(2.0);
+			}
+		};
+	}
 
 	@Test
 	public void test1DSquare() {
@@ -29,9 +45,24 @@ public class IntegratorTest {
 		Pair<Double, Double> range = new Pair<Double, Double>(0.0,2.0);
 		ArrayList<Pair<Double, Double>> ranges = Lists.<Pair<Double, Double>>newArrayList();
 		ranges.add(range);
-		DoubleVector val = Integrator.integrate(f, ranges);
+		double accuracy = 1.0E-5;
+		DoubleVector val = Integrator.integrate(f, ranges, accuracy);
+		System.out.println("Actual value: " + val + "\nExpected value: [2.666666...]\n");
 		
-		assertEquals(new DoubleVector(8.0/3.0), val);
+		assertTrue(new DoubleVector(8.0/3.0).equals(val, accuracy));
+	}
+	
+	@Test
+	public void test1DSquareRoot() {
+		Function<DoubleVector, DoubleVector> f = getSquareRootFunction();
+		Pair<Double, Double> range = new Pair<Double, Double>(0.0, 2.0);
+		ArrayList<Pair<Double, Double>> ranges = Lists.<Pair<Double, Double>>newArrayList();
+		ranges.add(range);
+		double accuracy = 1.0E-5;
+		DoubleVector val = Integrator.integrate(f, ranges, accuracy);
+		System.out.println("Actual value: " + val + "\nExpected value: [1.8856...]\n");
+		
+		assertTrue(new DoubleVector(4.0 * Math.sqrt(2) / 3).equals(val, accuracy));
 	}
 
 	@Test
@@ -41,7 +72,39 @@ public class IntegratorTest {
 		ArrayList<Pair<Double, Double>> ranges = Lists.<Pair<Double, Double>>newArrayList();
 		ranges.add(range);
 		ranges.add(range);
-		DoubleVector val = Integrator.integrate(f, ranges);
-		assertEquals(new DoubleVector(32.0/3.0), val);
+		double accuracy = 1.0E-1;
+		DoubleVector val = Integrator.integrate(f, ranges, accuracy);
+		System.out.println("Actual value: " + val + "\nExpected value: [10.666666...]\n");
+		
+		assertTrue(new DoubleVector(32.0/3.0).equals(val, accuracy));
+	}
+	
+	@Test
+	public void test3DSquare() {
+		Function<DoubleVector, DoubleVector> f = getSquareFunction();
+		Pair<Double, Double> range = new Pair<Double, Double>(0.0,2.0);
+		ArrayList<Pair<Double, Double>> ranges = Lists.<Pair<Double, Double>>newArrayList();
+		ranges.add(range);
+		ranges.add(range);
+		ranges.add(range);
+		double accuracy = 1.0E-1;
+		DoubleVector val = Integrator.integrate(f, ranges, accuracy);
+		System.out.println("Actual value: " + val + "\nExpected value: [32.0]\n");
+		
+		assertTrue(new DoubleVector(32.0).equals(val, accuracy));
+	}
+	
+	@Test
+	public void testVectorIntegrate() {
+		Function<DoubleVector, DoubleVector> f = getVectorFunction();
+		Pair<Double, Double> range = new Pair<Double, Double>(0.0,2.0);
+		ArrayList<Pair<Double, Double>> ranges = Lists.<Pair<Double, Double>>newArrayList();
+		ranges.add(range);
+		ranges.add(range);
+		double accuracy = 1.0E-1;
+		DoubleVector val = Integrator.integrate(f, ranges, accuracy);
+		System.out.println("Actual value: " + val + "\nExpected value: [8.0, 8.0]\n");
+		
+		assertTrue(new DoubleVector(8.0, 8.0).equals(val, accuracy));
 	}
 }
