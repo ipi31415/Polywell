@@ -40,47 +40,74 @@ public class IntegratorTest {
 	}
 
 	@Test
-	public void test1DSquare() {
+	public void test1DSquareTrap() {
 		Function<DoubleVector, DoubleVector> f = getSquareFunction();
 		Pair<Double, Double> range = new Pair<Double, Double>(0.0,2.0);
 		ArrayList<Pair<Double, Double>> ranges = Lists.<Pair<Double, Double>>newArrayList();
 		ranges.add(range);
 		double accuracy = 1.0E-5;
-		DoubleVector val = Integrator.integrate(f, ranges, accuracy);
+		DoubleVector val = Integrator.integrateTrap(f, ranges, accuracy);
 		System.out.println("Actual value: " + val + "\nExpected value: [2.666666...]\n");
 		
 		assertTrue(new DoubleVector(8.0/3.0).equals(val, accuracy));
 	}
 	
 	@Test
-	public void test1DSquareRoot() {
+	public void test1DSquareMC() {
+		Function<DoubleVector, DoubleVector> f = getSquareFunction();
+		Pair<Double, Double> range = new Pair<Double, Double>(0.0,2.0);
+		ArrayList<Pair<Double, Double>> ranges = Lists.<Pair<Double, Double>>newArrayList();
+		ranges.add(range);
+		double accuracy = 1.0E-2;
+		DoubleVector val = Integrator.integrateMonteCarlo(f, ranges, 1000000);
+		System.out.println("Actual value: " + val + "\nExpected value: [2.666666...]\n");
+		
+		assertTrue(new DoubleVector(8.0/3.0).equals(val, accuracy * 10));
+	}
+	
+	@Test
+	public void test1DSquareRootTrap() {
 		Function<DoubleVector, DoubleVector> f = getSquareRootFunction();
 		Pair<Double, Double> range = new Pair<Double, Double>(0.0, 2.0);
 		ArrayList<Pair<Double, Double>> ranges = Lists.<Pair<Double, Double>>newArrayList();
 		ranges.add(range);
 		double accuracy = 1.0E-5;
-		DoubleVector val = Integrator.integrate(f, ranges, accuracy);
+		DoubleVector val = Integrator.integrateTrap(f, ranges, accuracy);
 		System.out.println("Actual value: " + val + "\nExpected value: [1.8856...]\n");
 		
 		assertTrue(new DoubleVector(4.0 * Math.sqrt(2) / 3).equals(val, accuracy));
 	}
 
 	@Test
-	public void test2DSquare() {
+	public void test2DSquareTrap() {
 		Function<DoubleVector, DoubleVector> f = getSquareFunction();
 		Pair<Double, Double> range = new Pair<Double, Double>(0.0,2.0);
 		ArrayList<Pair<Double, Double>> ranges = Lists.<Pair<Double, Double>>newArrayList();
 		ranges.add(range);
 		ranges.add(range);
 		double accuracy = 1.0E-1;
-		DoubleVector val = Integrator.integrate(f, ranges, accuracy);
+		DoubleVector val = Integrator.integrateTrap(f, ranges, accuracy);
 		System.out.println("Actual value: " + val + "\nExpected value: [10.666666...]\n");
 		
 		assertTrue(new DoubleVector(32.0/3.0).equals(val, accuracy));
 	}
 	
 	@Test
-	public void test3DSquare() {
+	public void test2DSquareMC() {
+		Function<DoubleVector, DoubleVector> f = getSquareFunction();
+		Pair<Double, Double> range = new Pair<Double, Double>(0.0,2.0);
+		ArrayList<Pair<Double, Double>> ranges = Lists.<Pair<Double, Double>>newArrayList();
+		ranges.add(range);
+		ranges.add(range);
+		double accuracy = 1.0E-2;
+		DoubleVector val = Integrator.integrateMonteCarlo(f, ranges, 1000000);
+		System.out.println("Actual value: " + val + "\nExpected value: [10.666666...]\n");
+		
+		assertTrue(new DoubleVector(32.0/3.0).equals(val, accuracy * 10));
+	}
+	
+	@Test
+	public void test3DSquareTrap() {
 		Function<DoubleVector, DoubleVector> f = getSquareFunction();
 		Pair<Double, Double> range = new Pair<Double, Double>(0.0,2.0);
 		ArrayList<Pair<Double, Double>> ranges = Lists.<Pair<Double, Double>>newArrayList();
@@ -88,23 +115,50 @@ public class IntegratorTest {
 		ranges.add(range);
 		ranges.add(range);
 		double accuracy = 1.0E-1;
-		DoubleVector val = Integrator.integrate(f, ranges, accuracy);
+		DoubleVector val = Integrator.integrateTrap(f, ranges, accuracy);
 		System.out.println("Actual value: " + val + "\nExpected value: [32.0]\n");
 		
 		assertTrue(new DoubleVector(32.0).equals(val, accuracy));
 	}
 	
 	@Test
-	public void testVectorIntegrate() {
+	public void test3DSquareMC() {
+		Function<DoubleVector, DoubleVector> f = getSquareFunction();
+		Pair<Double, Double> range = new Pair<Double, Double>(0.0,2.0);
+		ArrayList<Pair<Double, Double>> ranges = Lists.<Pair<Double, Double>>newArrayList();
+		ranges.add(range);
+		ranges.add(range);
+		ranges.add(range);
+		double accuracy = 1.0E-2;
+		DoubleVector val = Integrator.integrateMonteCarlo(f, ranges, 1000000);
+		System.out.println("Actual value: " + val + "\nExpected value: [32.0]\n");
+		
+		assertTrue(new DoubleVector(32.0).equals(val, accuracy * 10));
+	}
+	
+	@Test
+	public void testVectorTrap() {
 		Function<DoubleVector, DoubleVector> f = getVectorFunction();
 		Pair<Double, Double> range = new Pair<Double, Double>(0.0,2.0);
 		ArrayList<Pair<Double, Double>> ranges = Lists.<Pair<Double, Double>>newArrayList();
 		ranges.add(range);
 		ranges.add(range);
 		double accuracy = 1.0E-1;
-		DoubleVector val = Integrator.integrate(f, ranges, accuracy);
+		DoubleVector val = Integrator.integrateTrap(f, ranges, accuracy);
 		System.out.println("Actual value: " + val + "\nExpected value: [8.0, 8.0]\n");
 		
 		assertTrue(new DoubleVector(8.0, 8.0).equals(val, accuracy));
+	}
+	
+	@Test
+	public void testRandomInRange() {
+		DoubleVector min = new DoubleVector(-5.0, -5.0, -5.0, -5.0, -5.0);
+		DoubleVector max = new DoubleVector(2.0, 2.0, 2.0, 2.0, 2.0);
+		DoubleVector rand = Integrator.getRandomInRange(min, max);
+		int dim = min.getSize();
+		for (int i = 0; i < dim; i++) {
+			assertTrue(rand.getValue(i) > min.getValue(i) && 
+					rand.getValue(i) < max.getValue(i));
+		}
 	}
 }
