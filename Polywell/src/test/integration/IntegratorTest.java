@@ -114,7 +114,7 @@ public class IntegratorTest {
 		ranges.add(range);
 		ranges.add(range);
 		ranges.add(range);
-		double accuracy = 1.0E-1;
+		double accuracy = 1.0E-0;
 		DoubleVector val = Integrator.integrateTrap(f, ranges, accuracy);
 		System.out.println("Actual value: " + val + "\nExpected value: [32.0]\n");
 		
@@ -134,6 +134,21 @@ public class IntegratorTest {
 		System.out.println("Actual value: " + val + "\nExpected value: [32.0]\n");
 		
 		assertTrue(new DoubleVector(32.0).equals(val, accuracy * 10));
+	}
+	
+	@Test
+	public void test10DSquareMC() {
+		Function<DoubleVector, DoubleVector> f = getSquareFunction();
+		Pair<Double, Double> range = new Pair<Double, Double>(0.0,2.0);
+		ArrayList<Pair<Double, Double>> ranges = Lists.<Pair<Double, Double>>newArrayList();
+		for (int i = 0; i < 10; i++) {
+			ranges.add(range);
+		}
+		double accuracy = 1.0E-2;
+		DoubleVector val = Integrator.integrateMonteCarlo(f, ranges, 1000000);
+		System.out.println("Actual value: " + val + "\nExpected value: [13653.3333]\n");
+		
+		assertTrue(new DoubleVector(40960.0/3.0).equals(val, accuracy * 1000));
 	}
 	
 	@Test

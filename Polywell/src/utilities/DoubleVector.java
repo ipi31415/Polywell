@@ -103,6 +103,14 @@ public class DoubleVector {
 		return result;
 	}
 	
+	public double norm() {
+		return dotProduct(this);
+	}
+	
+	public DoubleVector normalize() {
+		return this.divide(norm());
+	}
+	
 	public DoubleVector abs() {
 		DoubleVector result = new DoubleVector(size);
 		for (int i = 0; i < size; i++) {
