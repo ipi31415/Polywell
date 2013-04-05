@@ -6,6 +6,11 @@ public class Pair<A, B> {
 	public A a;
 	public B b;
 	
+	public Pair(A a, B b) {
+		this.a = a;
+		this.b = b;
+	}
+	
 	@Override
 	public boolean equals(Object other) {
 		return Objects.equal(this, other);

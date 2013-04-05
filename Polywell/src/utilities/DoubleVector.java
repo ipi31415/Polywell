@@ -6,6 +6,8 @@ import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 public class DoubleVector {
+	private static double EPSILON = 1.0E-2;
+	
 	private final int size;
 	private List<Double> values;
 	
@@ -14,6 +16,14 @@ public class DoubleVector {
 		values = Lists.<Double>newArrayList();
 		for (int i = 0; i < size; i++) {
 			values.add(0.0);
+		}
+	}
+	
+	public DoubleVector(double... values) {
+		size = values.length;
+		this.values = Lists.<Double>newArrayList();
+		for (int i = 0; i < size; i++) {
+			this.values.add(values[i]);
 		}
 	}
 	
@@ -95,11 +105,22 @@ public class DoubleVector {
 	
 	@Override
 	public boolean equals(Object other) {
-		return Objects.equal(this, other);
+		DoubleVector o = (DoubleVector) other;
+		for (int i = 0; i < size; i++) {
+			if (Math.abs(getValue(i) - o.getValue(i)) >= EPSILON) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(this);
+		return Objects.hashCode(values);
+	}
+	
+	@Override
+	public String toString() {
+		return values.toString();
 	}
 }
