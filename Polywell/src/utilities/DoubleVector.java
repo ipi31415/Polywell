@@ -104,7 +104,7 @@ public class DoubleVector {
 	}
 	
 	public double norm() {
-		return dotProduct(this);
+		return Math.sqrt(dotProduct(this));
 	}
 	
 	public DoubleVector normalize() {
