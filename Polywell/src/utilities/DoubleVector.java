@@ -5,13 +5,16 @@ import java.util.List;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
-public class DoubleVector {
-	private static final double EPSILON = 1.0E-7;
+public class DoubleVector implements Cloneable{
+	public static final double EPSILON = 1.0E-7;
 	
 	private final int size;
 	private List<Double> values;
 	
 	public DoubleVector(int size) {
+		if (size <= 0) {
+			throw new IllegalArgumentException("Size of vector must be positive.");
+		}
 		this.size = size;
 		values = Lists.<Double>newArrayList();
 		for (int i = 0; i < size; i++) {
@@ -24,6 +27,14 @@ public class DoubleVector {
 		this.values = Lists.<Double>newArrayList();
 		for (int i = 0; i < size; i++) {
 			this.values.add(values[i]);
+		}
+	}
+	
+	public DoubleVector(List<Double> values) {
+		size = values.size();
+		this.values = Lists.<Double>newArrayList();
+		for (int i = 0; i < size; i++) {
+			this.values.add(values.get(i));
 		}
 	}
 	
@@ -42,10 +53,7 @@ public class DoubleVector {
 		if (index >= size) {
 			throw new IndexOutOfBoundsException();
 		}
-		DoubleVector result = new DoubleVector(size);
-		for (int i = 0; i < size; i++) {
-			result.values.set(i, getValue(i));
-		}
+		DoubleVector result = clone();
 		result.values.set(index, value);
 		return result;
 	}
@@ -78,6 +86,9 @@ public class DoubleVector {
 	}
 	
 	public DoubleVector divide(double scalar) {
+		if (scalar == 0) {
+			throw new ArithmeticException("Division by 0");
+		}
 		return multiply(1 / scalar);
 	}
 	
@@ -133,6 +144,15 @@ public class DoubleVector {
 			min = Math.min(min, getValue(i));
 		}
 		return min;
+	}
+	
+	@Override
+	public DoubleVector clone() {
+		DoubleVector result = new DoubleVector(size);
+		for (int i = 0; i < size; i++) {
+			result.values.set(i, getValue(i));
+		}
+		return result;
 	}
 	
 	@Override
