@@ -17,6 +17,7 @@ public class IntegratorTest {
 	
 	public Function<DoubleVector, DoubleVector> getSquareFunction() {
 		return new Function<DoubleVector, DoubleVector>() {
+			@Override
 			public DoubleVector apply(DoubleVector x) {
 				return new DoubleVector(x.dotProduct(x));
 			}
@@ -25,6 +26,7 @@ public class IntegratorTest {
 	
 	public Function<DoubleVector, DoubleVector> getSquareRootFunction() {
 		return new Function<DoubleVector, DoubleVector>() {
+			@Override
 			public DoubleVector apply(DoubleVector x) {
 				return new DoubleVector(Math.sqrt(x.getValue(0)));
 			}
@@ -33,6 +35,7 @@ public class IntegratorTest {
 	
 	public Function<DoubleVector, DoubleVector> getVectorFunction() {
 		return new Function<DoubleVector, DoubleVector>() {
+			@Override
 			public DoubleVector apply(DoubleVector x) {
 				return x.multiply(2.0);
 			}
@@ -42,7 +45,7 @@ public class IntegratorTest {
 	@Test
 	public void test1DSquareTrap() {
 		Function<DoubleVector, DoubleVector> f = getSquareFunction();
-		Pair<Double, Double> range = new Pair<Double, Double>(0.0,2.0);
+		Pair<Double, Double> range = Pair.<Double, Double>of(0.0,2.0);
 		ArrayList<Pair<Double, Double>> ranges = Lists.<Pair<Double, Double>>newArrayList();
 		ranges.add(range);
 		double accuracy = 1.0E-5;
@@ -55,7 +58,7 @@ public class IntegratorTest {
 	@Test
 	public void test1DSquareMC() {
 		Function<DoubleVector, DoubleVector> f = getSquareFunction();
-		Pair<Double, Double> range = new Pair<Double, Double>(0.0,2.0);
+		Pair<Double, Double> range = Pair.<Double, Double>of(0.0,2.0);
 		ArrayList<Pair<Double, Double>> ranges = Lists.<Pair<Double, Double>>newArrayList();
 		ranges.add(range);
 		double accuracy = 1.0E-2;
@@ -68,7 +71,7 @@ public class IntegratorTest {
 	@Test
 	public void test1DSquareRootTrap() {
 		Function<DoubleVector, DoubleVector> f = getSquareRootFunction();
-		Pair<Double, Double> range = new Pair<Double, Double>(0.0, 2.0);
+		Pair<Double, Double> range = Pair.<Double, Double>of(0.0,2.0);
 		ArrayList<Pair<Double, Double>> ranges = Lists.<Pair<Double, Double>>newArrayList();
 		ranges.add(range);
 		double accuracy = 1.0E-5;
@@ -81,7 +84,7 @@ public class IntegratorTest {
 	@Test
 	public void test2DSquareTrap() {
 		Function<DoubleVector, DoubleVector> f = getSquareFunction();
-		Pair<Double, Double> range = new Pair<Double, Double>(0.0,2.0);
+		Pair<Double, Double> range = Pair.<Double, Double>of(0.0,2.0);
 		ArrayList<Pair<Double, Double>> ranges = Lists.<Pair<Double, Double>>newArrayList();
 		ranges.add(range);
 		ranges.add(range);
@@ -95,7 +98,7 @@ public class IntegratorTest {
 	@Test
 	public void test2DSquareMC() {
 		Function<DoubleVector, DoubleVector> f = getSquareFunction();
-		Pair<Double, Double> range = new Pair<Double, Double>(0.0,2.0);
+		Pair<Double, Double> range = Pair.<Double, Double>of(0.0,2.0);
 		ArrayList<Pair<Double, Double>> ranges = Lists.<Pair<Double, Double>>newArrayList();
 		ranges.add(range);
 		ranges.add(range);
@@ -109,7 +112,7 @@ public class IntegratorTest {
 	@Test
 	public void test3DSquareTrap() {
 		Function<DoubleVector, DoubleVector> f = getSquareFunction();
-		Pair<Double, Double> range = new Pair<Double, Double>(0.0,2.0);
+		Pair<Double, Double> range = Pair.<Double, Double>of(0.0,2.0);
 		ArrayList<Pair<Double, Double>> ranges = Lists.<Pair<Double, Double>>newArrayList();
 		ranges.add(range);
 		ranges.add(range);
@@ -124,7 +127,7 @@ public class IntegratorTest {
 	@Test
 	public void test3DSquareMC() {
 		Function<DoubleVector, DoubleVector> f = getSquareFunction();
-		Pair<Double, Double> range = new Pair<Double, Double>(0.0,2.0);
+		Pair<Double, Double> range = Pair.<Double, Double>of(0.0,2.0);
 		ArrayList<Pair<Double, Double>> ranges = Lists.<Pair<Double, Double>>newArrayList();
 		ranges.add(range);
 		ranges.add(range);
@@ -139,7 +142,7 @@ public class IntegratorTest {
 	@Test
 	public void test10DSquareMC() {
 		Function<DoubleVector, DoubleVector> f = getSquareFunction();
-		Pair<Double, Double> range = new Pair<Double, Double>(0.0,2.0);
+		Pair<Double, Double> range = Pair.<Double, Double>of(0.0,2.0);
 		ArrayList<Pair<Double, Double>> ranges = Lists.<Pair<Double, Double>>newArrayList();
 		for (int i = 0; i < 10; i++) {
 			ranges.add(range);
@@ -154,7 +157,7 @@ public class IntegratorTest {
 	@Test
 	public void testVectorTrap() {
 		Function<DoubleVector, DoubleVector> f = getVectorFunction();
-		Pair<Double, Double> range = new Pair<Double, Double>(0.0,2.0);
+		Pair<Double, Double> range = Pair.<Double, Double>of(0.0,2.0);
 		ArrayList<Pair<Double, Double>> ranges = Lists.<Pair<Double, Double>>newArrayList();
 		ranges.add(range);
 		ranges.add(range);

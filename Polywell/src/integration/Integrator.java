@@ -18,9 +18,9 @@ public class Integrator {
 		DoubleVector maxCoord = new DoubleVector(dim);
 		DoubleVector steps = new DoubleVector(dim);
 		for (int i = 0; i < dim; i++) {
-			minCoord = minCoord.setValue(i, ranges.get(i).a);
-			maxCoord = maxCoord.setValue(i, ranges.get(i).b);
-			steps = steps.setValue(i, (ranges.get(i).b - ranges.get(i).a) / gridSteps);
+			minCoord = minCoord.setValue(i, ranges.get(i).getA());
+			maxCoord = maxCoord.setValue(i, ranges.get(i).getB());
+			steps = steps.setValue(i, (ranges.get(i).getB() - ranges.get(i).getA()) / gridSteps);
 		}
 		DoubleVector prevTotal;
 		DoubleVector total = new DoubleVector(f.apply(minCoord).getSize());
@@ -45,7 +45,7 @@ public class Integrator {
 			gridSteps *= 2;
 			steps = new DoubleVector(dim);
 			for (int i = 0; i < dim; i++) {
-				steps = steps.setValue(i, (ranges.get(i).b - ranges.get(i).a) / gridSteps);
+				steps = steps.setValue(i, (ranges.get(i).getB() - ranges.get(i).getA()) / gridSteps);
 			}
 			total = total.multiply(prodSteps);
 		} while (prevTotal.subtract(total).abs().max() > accuracy);
@@ -60,22 +60,19 @@ public class Integrator {
 		DoubleVector maxCoord = new DoubleVector(dim);
 		DoubleVector steps = new DoubleVector(dim);
 		for (int i = 0; i < dim; i++) {
-			minCoord = minCoord.setValue(i, ranges.get(i).a);
-			maxCoord = maxCoord.setValue(i, ranges.get(i).b);
-			steps = steps.setValue(i, (ranges.get(i).b - ranges.get(i).a) / gridSteps);
+			minCoord = minCoord.setValue(i, ranges.get(i).getA());
+			maxCoord = maxCoord.setValue(i, ranges.get(i).getB());
+			steps = steps.setValue(i, (ranges.get(i).getB() - ranges.get(i).getA()) / gridSteps);
 		}
 		double volume = getVolume(minCoord, maxCoord);
 		DoubleVector total = new DoubleVector(f.apply(minCoord).getSize());
-		//DoubleVector prevTotal = null;
 		int num = 0;
 		do {
-			//prevTotal = total.multiply(1);
 			num++;
 			DoubleVector coord = getRandomInRange(minCoord, maxCoord);
 			DoubleVector value = f.apply(coord);
 			total = total.add(value);
-		} while (num < minRuns);// || prevTotal.multiply(volume).divide(num - 1).subtract(
-				//total.multiply(volume).divide(num)).abs().max() > accuracy);
+		} while (num < minRuns);
 		
 		return total.multiply(volume).divide(num);
 	}
