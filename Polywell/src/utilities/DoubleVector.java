@@ -115,6 +115,17 @@ public class DoubleVector implements Cloneable, Serializable{
 		return result;
 	}
 	
+	public DoubleVector elementMultiply(DoubleVector other) {
+		if (size != other.size) {
+			throw new IllegalArgumentException("Size of vectors must be equal");
+		}
+		DoubleVector result = new DoubleVector(size);
+		for (int i = 0; i < size; i++) {
+			result = result.setValue(i, getValue(i) * other.getValue(i));
+		}
+		return result;
+	}
+	
 	public double norm() {
 		return Math.sqrt(dotProduct(this));
 	}
@@ -145,6 +156,18 @@ public class DoubleVector implements Cloneable, Serializable{
 			min = Math.min(min, getValue(i));
 		}
 		return min;
+	}
+	
+	public DoubleVector getProjection(DoubleVector dir) {
+		DoubleVector n = dir.normalize();
+		return subtract(n.multiply(dotProduct(n)));
+	}
+	
+	public DoubleVector getProjection3Dto2D(DoubleVector dir, DoubleVector up) {
+		up = up.getProjection(dir);
+		DoubleVector xPrime = getProjection(dir);
+		DoubleVector right = dir.crossProduct(up).normalize();
+		return new DoubleVector(xPrime.dotProduct(right), xPrime.dotProduct(up));
 	}
 	
 	@Override

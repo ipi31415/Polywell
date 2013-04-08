@@ -9,31 +9,41 @@ import java.util.List;
 import javax.swing.JPanel;
 
 import magnetic.MagneticField;
+import utilities.DoubleVector;
 import utilities.Pair;
 
 public class FusionPanel extends JPanel{
+	public static final DoubleVector DEFAULT_VIEW_DIRECTION = new DoubleVector(0, 1, 0);
+	public static final DoubleVector DEFAULT_UP_DIRECTION = new DoubleVector(0, 0, 1);
+	
 	private MagneticField field;
 	private Pair<Double, Double> xRange;
 	private Pair<Double, Double> yRange;
 	private Pair<Double, Double> zRange;
 	private int gridPoints;
+	private DoubleVector centerPoint;
+	private DoubleVector viewDirection;
+	private DoubleVector upDirection;
+	private DoubleVector scaleFactors;
 	
 	public FusionPanel() {
-		this(null, null, 0);
+		this(null, null, 0, new DoubleVector(0, 0, 0), new DoubleVector(0, 1, 0));
+	}
+
+	public FusionPanel(MagneticField field, List<Pair<Double, Double>> plotRanges, int gridPoints,
+			DoubleVector centerPoint) {
+		this(field, plotRanges.get(0), plotRanges.get(1), plotRanges.get(2), gridPoints, centerPoint, 
+				DEFAULT_VIEW_DIRECTION);
 	}
 	
-	public FusionPanel(MagneticField field, List<Pair<Double, Double>> plotRanges, int gridPoints) {
-		super();
-		this.setPreferredSize(new Dimension(640, 480));
-		this.field = field;
-		this.xRange = plotRanges.get(0);
-		this.yRange = plotRanges.get(1);
-		this.zRange = plotRanges.get(2);
-		this.gridPoints = gridPoints;
+	public FusionPanel(MagneticField field, List<Pair<Double, Double>> plotRanges, int gridPoints,
+			DoubleVector centerPoint, DoubleVector viewDirection) {
+		this(field, plotRanges.get(0), plotRanges.get(1), plotRanges.get(2), gridPoints, centerPoint, 
+				viewDirection);
 	}
 	
 	public FusionPanel(MagneticField field, Pair<Double, Double> xRange, Pair<Double, Double> yRange,
-			Pair<Double, Double> zRange, int gridPoints) {
+			Pair<Double, Double> zRange, int gridPoints, DoubleVector centerPoint, DoubleVector viewDirection) {
 		super();
 		this.setPreferredSize(new Dimension(640, 480));
 		this.field = field;
@@ -41,6 +51,9 @@ public class FusionPanel extends JPanel{
 		this.yRange = yRange;
 		this.zRange = zRange;
 		this.gridPoints = gridPoints;
+		this.centerPoint = centerPoint;
+		this.viewDirection = viewDirection;
+		this.upDirection = DEFAULT_UP_DIRECTION;
 	}
 	
 	public void setXRange(Pair<Double, Double> xRange) {
@@ -59,13 +72,82 @@ public class FusionPanel extends JPanel{
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g.create();
-		g2.setColor(Color.BLUE);
-		g2.drawLine(0, 0, 640, 480);
 		
-		drawField();
+		drawAxes(g2);
+		drawField(g2);
 	}
 	
-	public void drawField() {
+	public void drawAxes(Graphics2D g) {
+		int centerX = getWidth() / 2;
+		int centerY = getHeight() / 2;
+		DoubleVector center = new DoubleVector(centerX, centerY);
 		
+		DoubleVector xMax = new DoubleVector(xRange.getB(), 0, 0);
+		DoubleVector xMin = new DoubleVector(xRange.getA(), 0, 0);
+		xMax = xMax.getProjection3Dto2D(viewDirection, upDirection);
+		xMin = xMin.getProjection3Dto2D(viewDirection, upDirection);
+		DoubleVector yMax = new DoubleVector(0, yRange.getB(), 0);
+		DoubleVector yMin = new DoubleVector(0, yRange.getA(), 0);
+		yMax = yMax.getProjection3Dto2D(viewDirection, upDirection);
+		yMin = yMin.getProjection3Dto2D(viewDirection, upDirection);
+		DoubleVector zMax = new DoubleVector(0, 0, zRange.getB());
+		DoubleVector zMin = new DoubleVector(0, 0, zRange.getA());
+		zMax = zMax.getProjection3Dto2D(viewDirection, upDirection);
+		zMin = zMin.getProjection3Dto2D(viewDirection, upDirection);
+		
+		double xDrawMin = new DoubleVector(xMin.getValue(0), xMax.getValue(0),
+				yMin.getValue(0), yMax.getValue(0),
+				zMin.getValue(0), zMax.getValue(0)).min();
+		double xDrawMax = new DoubleVector(xMin.getValue(0), xMax.getValue(0),
+				yMin.getValue(0), yMax.getValue(0),
+				zMin.getValue(0), zMax.getValue(0)).max();
+		double yDrawMin = new DoubleVector(xMin.getValue(1), xMax.getValue(1),
+				yMin.getValue(1), yMax.getValue(1),
+				zMin.getValue(1), zMax.getValue(1)).min();
+		double yDrawMax = new DoubleVector(xMin.getValue(1), xMax.getValue(1),
+				yMin.getValue(1), yMax.getValue(1),
+				zMin.getValue(1), zMax.getValue(1)).max();
+		
+		double maxDistX = Math.max(xDrawMax, xDrawMin);
+		double maxDistY = Math.max(yDrawMax, yDrawMin);
+		
+		double xScaleFactor = getWidth() / (2 * maxDistX);
+		double yScaleFactor = -1 * getHeight() / (2 * maxDistY);
+		scaleFactors = new DoubleVector(xScaleFactor, yScaleFactor);
+		
+		xMin = xMin.elementMultiply(scaleFactors).add(center);
+		xMax = xMax.elementMultiply(scaleFactors).add(center);
+		yMin = yMin.elementMultiply(scaleFactors).add(center);
+		yMax = yMax.elementMultiply(scaleFactors).add(center);
+		zMin = zMin.elementMultiply(scaleFactors).add(center);
+		zMax = zMax.elementMultiply(scaleFactors).add(center);
+		
+		g.setColor(Color.BLACK);
+		g.drawLine((int) xMin.getValue(0).doubleValue(), (int) xMin.getValue(1).doubleValue(), 
+				(int) xMax.getValue(0).doubleValue(), (int) xMax.getValue(1).doubleValue());
+		g.drawLine((int) yMin.getValue(0).doubleValue(), (int) yMin.getValue(1).doubleValue(), 
+				(int) yMax.getValue(0).doubleValue(), (int) yMax.getValue(1).doubleValue());
+		g.drawLine((int) zMin.getValue(0).doubleValue(), (int) zMin.getValue(1).doubleValue(), 
+				(int) zMax.getValue(0).doubleValue(), (int) zMax.getValue(1).doubleValue());
+	}
+	
+	public void drawField(Graphics2D g) {
+		drawVector(g, new DoubleVector(0, 0, 0), new DoubleVector(1, 2, 3));
+	}
+	
+	public void drawVector(Graphics2D g, DoubleVector o, DoubleVector x) {
+		int centerX = getWidth() / 2;
+		int centerY = getHeight() / 2;
+		DoubleVector center = new DoubleVector(centerX, centerY);
+		
+		x = x.getProjection3Dto2D(viewDirection, upDirection);
+		o = o.getProjection3Dto2D(viewDirection, upDirection);
+		
+		o = o.elementMultiply(scaleFactors).add(center);
+		x = x.elementMultiply(scaleFactors).add(center);
+		
+		g.setColor(Color.BLUE);
+		g.drawLine((int) o.getValue(0).doubleValue(), (int) o.getValue(1).doubleValue(), 
+				(int) x.getValue(0).doubleValue(), (int) x.getValue(1).doubleValue());
 	}
 }

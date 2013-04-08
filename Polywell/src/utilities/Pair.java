@@ -24,6 +24,11 @@ public class Pair<A, B> {
 	}
 	
 	@Override
+	public String toString() {
+		return a + ", " + b;
+	}
+	
+	@Override
 	public boolean equals(Object other) {
 		return Objects.equal(this, other);
 	}

@@ -189,6 +189,24 @@ public class DoubleVectorTest {
 	}
 	
 	@Test
+	public void elementMultiplyTest() {
+		DoubleVector a = getA();
+		DoubleVector b = new DoubleVector(0, 1, 2);
+		DoubleVector prod = a.elementMultiply(b);
+		DoubleVector expectedResult = new DoubleVector(0, 2, 6);
+		assertNotEquals(prod, a);
+		assertNotEquals(prod, b);
+		assertEquals(expectedResult, expectedResult);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void elementMultiplySizeMismatchTest() {
+		DoubleVector a = getA();
+		DoubleVector b = new DoubleVector(1, 2);
+		a.elementMultiply(b);
+	}
+	
+	@Test
 	public void normTest() {
 		DoubleVector a = getA();
 		double norm = a.norm();
@@ -228,6 +246,25 @@ public class DoubleVectorTest {
 		double max = a.max();
 		double expectedResult = 3;
 		assertEquals(expectedResult, max, DoubleVector.EPSILON);
+	}
+	
+	@Test
+	public void getProjectionTest() {
+		DoubleVector a = new DoubleVector(1, 2, 3);
+		DoubleVector dir = new DoubleVector(0, 1, 0);
+		DoubleVector expectedResult = new DoubleVector(1, 0, 3);
+		DoubleVector proj = a.getProjection(dir);
+		assertEquals(expectedResult, proj);
+	}
+	
+	@Test
+	public void getProjection2Dto3DTest() {
+		DoubleVector a = new DoubleVector(1, 2, 3);
+		DoubleVector up = new DoubleVector(0, 0, 1);
+		DoubleVector dir = new DoubleVector(0, 1, 1);
+		DoubleVector expectedResult = new DoubleVector(1, .5);
+		DoubleVector proj = a.getProjection3Dto2D(dir, up);
+		assertEquals(expectedResult, proj);
 	}
 	
 	@Test
