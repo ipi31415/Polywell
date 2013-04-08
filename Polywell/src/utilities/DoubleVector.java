@@ -1,11 +1,12 @@
 package utilities;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
-public class DoubleVector implements Cloneable{
+public class DoubleVector implements Cloneable, Serializable{
 	public static final double EPSILON = 1.0E-7;
 	
 	private final int size;

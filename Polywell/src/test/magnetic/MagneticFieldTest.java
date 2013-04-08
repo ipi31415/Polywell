@@ -1,5 +1,9 @@
 package test.magnetic;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.io.IOException;
 import java.util.List;
 
 import magnetic.CurrentDensityFunction;
@@ -32,5 +36,32 @@ public class MagneticFieldTest {
 		DoubleVector center = field.getField(new DoubleVector(0, 0, 0));
 		System.out.println(System.currentTimeMillis() - time);
 		System.out.println(center);
+	}
+	
+	@Test
+	public void testReadWrite() {
+		Pair<CurrentDensityFunction, List<Pair<Double, Double>>> temp = getTorusFlat0();
+		CurrentDensityFunction j = temp.getA();
+		List<Pair<Double, Double>> ranges = temp.getB();
+		MagneticField field = new MagneticField(j, ranges);
+		field.addResult(new DoubleVector(1, 2, 3), new DoubleVector(1, 2, 3));
+		field.addResult(new DoubleVector(1, 2, 4), new DoubleVector(6, 6, 6));
+		try {
+			field.storeResults("qwertyfindmeplz");
+		} catch (IOException e) {
+			e.printStackTrace();
+			fail("IOException");
+		}
+		MagneticField readField = new MagneticField(j, ranges);
+		try {
+			readField.readResults("qwertyfindmeplz");
+		} catch (IOException e) {
+			fail("IOException");
+		} catch (ClassNotFoundException e) {
+			fail("ClassNotFoundException");
+		}
+		
+		assertEquals(new DoubleVector(1, 2, 3), readField.getField(new DoubleVector(1, 2, 3)));
+		assertEquals(new DoubleVector(6, 6, 6), readField.getField(new DoubleVector(1, 2, 4)));
 	}
 }

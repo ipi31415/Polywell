@@ -1,6 +1,8 @@
 package utilities;
 
-public class DoubleMatrix implements Cloneable{
+import java.io.Serializable;
+
+public class DoubleMatrix implements Cloneable, Serializable {
 	public static final double EPSILON = 1.0E-7;
 	
 	private int rows;
@@ -109,6 +111,40 @@ public class DoubleMatrix implements Cloneable{
 			}
 			result = result.setValue(r, total);
 		}
+		return result;
+	}
+	
+	public static DoubleMatrix getRotationMatrix(DoubleVector a, DoubleVector b) {
+		if (a.getSize() != b.getSize()) {
+			throw new IllegalArgumentException("Size of vectors must be equal");
+		}
+		if (a.getSize() == 2) {
+			throw new UnsupportedOperationException("2d rotation matrices not yet implemented");
+		}
+		if (a.getSize() != 3) {
+			throw new IllegalArgumentException("Size of vectors must be 3");
+		}
+		DoubleMatrix result = new DoubleMatrix(3, 3);
+		DoubleVector crossRotation = a.crossProduct(b);
+		double dotRotation = a.dotProduct(b);
+		double norm = dotRotation * dotRotation + crossRotation.dotProduct(crossRotation);
+		crossRotation = crossRotation.divide(norm);
+		dotRotation /= norm;
+		result = result.setValue(0, 0,  1 - 2 * crossRotation.getValue(1) - 2 * crossRotation.getValue(2));
+		result = result.setValue(0, 1, 2 * crossRotation.getValue(0) * crossRotation.getValue(1) - 
+				2 * crossRotation.getValue(2) * dotRotation);
+		result = result.setValue(0, 2, 2 * crossRotation.getValue(0) * crossRotation.getValue(2) + 
+				2 * crossRotation.getValue(1) * dotRotation);
+		result = result.setValue(1, 0, 2 * crossRotation.getValue(0) * crossRotation.getValue(1) + 
+				2 * crossRotation.getValue(2) * dotRotation);
+		result = result.setValue(1, 1,  1 - 2 * crossRotation.getValue(0) - 2 * crossRotation.getValue(2));
+		result = result.setValue(1, 2, 2 * crossRotation.getValue(1) * crossRotation.getValue(2) - 
+				2 * crossRotation.getValue(0) * dotRotation);
+		result = result.setValue(2, 0, 2 * crossRotation.getValue(0) * crossRotation.getValue(2) - 
+				2 * crossRotation.getValue(1) * dotRotation);
+		result = result.setValue(2, 1, 2 * crossRotation.getValue(1) * crossRotation.getValue(2) + 
+				2 * crossRotation.getValue(0) * dotRotation);
+		result = result.setValue(2, 2,  1 - 2 * crossRotation.getValue(0) - 2 * crossRotation.getValue(1));
 		return result;
 	}
 	
