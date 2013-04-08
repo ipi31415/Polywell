@@ -207,6 +207,24 @@ public class DoubleVectorTest {
 	}
 	
 	@Test
+	public void elementDivideTest() {
+		DoubleVector a = getA();
+		DoubleVector b = new DoubleVector(0, 1, 2);
+		DoubleVector div = a.elementDivide(b);
+		DoubleVector expectedResult = new DoubleVector(0, 2, 6);
+		assertNotEquals(div, a);
+		assertNotEquals(div, b);
+		assertEquals(expectedResult, expectedResult);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void elementDivideSizeMismatchTest() {
+		DoubleVector a = getA();
+		DoubleVector b = new DoubleVector(1, 2);
+		a.elementDivide(b);
+	}
+	
+	@Test
 	public void normTest() {
 		DoubleVector a = getA();
 		double norm = a.norm();

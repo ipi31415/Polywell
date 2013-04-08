@@ -2,13 +2,12 @@ package magnetic;
 
 import integration.Integrator;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.File;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Scanner;
 
 import utilities.DoubleVector;
 import utilities.Pair;
@@ -22,34 +21,65 @@ public class MagneticField {
 	private final CurrentDensityFunction j;
 	private final List<Pair<Double, Double>> ranges;
 
+	private String filename;
+	
 	private HashMap<DoubleVector, DoubleVector> results = Maps.<DoubleVector, DoubleVector>newHashMap();
 	
-	public MagneticField(CurrentDensityFunction j, List<Pair<Double, Double>> ranges) {
+	public MagneticField(CurrentDensityFunction j, List<Pair<Double, Double>> ranges, String filename) {
 		this.j = j;
 		this.ranges = ranges;
+		this.filename = filename;
+		try {
+			readResults();
+		} catch (Exception e) {}
+	}
+	
+	public void clear() {
+		results.clear();
+	}
+	
+	public HashMap<DoubleVector, DoubleVector> getResults() {
+		return results;
 	}
 	
 	public void addResult(DoubleVector x, DoubleVector fx) {
 		results.put(x, fx);
 	}
 	
-	public void storeResults(String filename) throws IOException {
-		FileOutputStream fos = new FileOutputStream(filename);
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
-
-        oos.writeObject(results);
-
-        oos.close();
+	public void readResults() throws IOException, ClassNotFoundException {
+		Scanner in = new Scanner(new File(filename + ".field"));
+		results = Maps.<DoubleVector, DoubleVector>newHashMap();
+		while(in.hasNextLine()) {
+			Scanner line = new Scanner(in.nextLine());
+			double a = line.nextDouble();
+			double b = line.nextDouble();
+			double c = line.nextDouble();
+			DoubleVector x = new DoubleVector(a, b, c);
+			a = line.nextDouble();
+			b = line.nextDouble();
+			c = line.nextDouble();
+			DoubleVector fx = new DoubleVector(a, b, c);
+			results.put(x, fx);
+		}
+		in.close();
 	}
 	
-	@SuppressWarnings("unchecked")
-	public void readResults(String filename) throws IOException, ClassNotFoundException {
-		FileInputStream fis = new FileInputStream(filename);
-		ObjectInputStream ois = new ObjectInputStream(fis);
-		
-		results = (HashMap<DoubleVector, DoubleVector>) ois.readObject();
-		
-		ois.close();
+	public void storeResults() throws IOException {
+		PrintWriter out = new PrintWriter(filename + ".field");
+		for (DoubleVector v : results.keySet()) {
+			out.print(v.getValue(0) + " " + v.getValue(1) + " " + v.getValue(2) + " ");
+			DoubleVector res = results.get(v);
+			out.println(res.getValue(0) + " " + res.getValue(1) + " " + res.getValue(2));
+		}
+		out.close();
+	}
+	
+	public CurrentDensityFunction getCurrentDensityFunction() {
+		return j;
+	}
+	
+	public DoubleVector getFieldLoaded(DoubleVector coord) {
+		return results.get(coord);
 	}
 	
 	public DoubleVector getField(DoubleVector coord) {
@@ -67,6 +97,9 @@ public class MagneticField {
 			@Override
 			public DoubleVector apply(DoubleVector x) {
 				DoubleVector relative = coord.subtract(x);
+				if (relative.norm() == 0) {
+					return new DoubleVector(0, 0, 0);
+				}
 				DoubleVector direction = relative.normalize();
 				return j.apply(x).crossProduct(direction).divide(Math.pow(relative.norm(), 2));
 			}

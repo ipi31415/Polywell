@@ -13,6 +13,8 @@ import magnetic.MagneticField;
 import utilities.DoubleVector;
 import utilities.Pair;
 
+import com.google.common.collect.Lists;
+
 public class FusionWindow {
 	public static final int DEFAULT_WINDOW_WIDTH = 640;
 	public static final int DEFAULT_WINDOW_HEIGHT = 480;
@@ -31,15 +33,23 @@ public class FusionWindow {
 		DoubleVector direction = new DoubleVector(0, 0, 1);
 		double radius = 5.0;
 		double thickness = 1.0;
-		double magnitude = 2.0;
+		double magnitude = 0.7;
         Pair<CurrentDensityFunction, List<Pair<Double, Double>>> temp = 
         		CurrentDensityFunctionFactory.getTorusDensityFunction(radius, thickness, center, 
         				direction, magnitude);
 		CurrentDensityFunction j = temp.getA();
 		List<Pair<Double, Double>> ranges = temp.getB();
-		System.out.println(ranges);
-		MagneticField field = new MagneticField(j, ranges);
-        JPanel fusionPanel = new FusionPanel(field, ranges, 10, new DoubleVector(0, 0, 0),
+		List<Pair<Double, Double>> newRanges = Lists.<Pair<Double, Double>>newArrayList();
+		for (int i = 0; i < 3; i++) {
+			newRanges.add(Pair.of(ranges.get(i).getA() * 2, ranges.get(i).getB() * 2));
+		}
+		MagneticField field = new MagneticField(j, ranges, "Cubic Polywell30");
+		try {
+			field.readResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        JPanel fusionPanel = new FusionPanel(field, newRanges, 20, new DoubleVector(0, 0, 0),
         		new DoubleVector(-1, 1, -1));
         frame.add(fusionPanel);
         frame.pack();

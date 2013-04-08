@@ -31,7 +31,7 @@ public class MagneticFieldTest {
 		Pair<CurrentDensityFunction, List<Pair<Double, Double>>> temp = getTorusFlat0();
 		CurrentDensityFunction j = temp.getA();
 		List<Pair<Double, Double>> ranges = temp.getB();
-		MagneticField field = new MagneticField(j, ranges);
+		MagneticField field = new MagneticField(j, ranges, "test");
 		long time = System.currentTimeMillis();
 		DoubleVector center = field.getField(new DoubleVector(0, 0, 0));
 		System.out.println(System.currentTimeMillis() - time);
@@ -43,18 +43,18 @@ public class MagneticFieldTest {
 		Pair<CurrentDensityFunction, List<Pair<Double, Double>>> temp = getTorusFlat0();
 		CurrentDensityFunction j = temp.getA();
 		List<Pair<Double, Double>> ranges = temp.getB();
-		MagneticField field = new MagneticField(j, ranges);
+		MagneticField field = new MagneticField(j, ranges, "test");
 		field.addResult(new DoubleVector(1, 2, 3), new DoubleVector(1, 2, 3));
 		field.addResult(new DoubleVector(1, 2, 4), new DoubleVector(6, 6, 6));
 		try {
-			field.storeResults("qwertyfindmeplz");
+			field.storeResults();
 		} catch (IOException e) {
 			e.printStackTrace();
 			fail("IOException");
 		}
-		MagneticField readField = new MagneticField(j, ranges);
+		MagneticField readField = new MagneticField(j, ranges, "test");
 		try {
-			readField.readResults("qwertyfindmeplz");
+			readField.readResults();
 		} catch (IOException e) {
 			fail("IOException");
 		} catch (ClassNotFoundException e) {

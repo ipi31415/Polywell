@@ -126,11 +126,25 @@ public class DoubleVector implements Cloneable, Serializable{
 		return result;
 	}
 	
+	public DoubleVector elementDivide(DoubleVector other) {
+		if (size != other.size) {
+			throw new IllegalArgumentException("Size of vectors must be equal");
+		}
+		DoubleVector result = new DoubleVector(size);
+		for (int i = 0; i < size; i++) {
+			result = result.setValue(i, getValue(i) / other.getValue(i));
+		}
+		return result;
+	}
+	
 	public double norm() {
 		return Math.sqrt(dotProduct(this));
 	}
 	
 	public DoubleVector normalize() {
+		if (this.norm() == 0) {
+			return this;
+		}
 		return this.divide(norm());
 	}
 	
