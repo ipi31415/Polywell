@@ -12,9 +12,12 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.event.MouseInputListener;
 
+import magnetic.CurrentDensityFunction;
 import magnetic.MagneticField;
 import utilities.DoubleVector;
 import utilities.Pair;
+
+import com.google.common.collect.Maps;
 
 public class FusionPanel extends JPanel implements MouseInputListener {
 	public static final DoubleVector DEFAULT_VIEW_DIRECTION = new DoubleVector(0, 1, 0);
@@ -34,6 +37,8 @@ public class FusionPanel extends JPanel implements MouseInputListener {
 	private DoubleVector scaleFactors;
 
 	private DoubleVector clickPoint;
+
+	private HashMap<DoubleVector, DoubleVector> currentMap;
 	
 	public FusionPanel() {
 		this(null, null, 0, new DoubleVector(0, 0, 0), new DoubleVector(0, 1, 0));
@@ -66,6 +71,8 @@ public class FusionPanel extends JPanel implements MouseInputListener {
 		this.centerPoint = centerPoint;
 		this.viewDirection = viewDirection.normalize();
 		this.upDirection = DEFAULT_UP_DIRECTION;
+		this.currentMap = Maps.<DoubleVector, DoubleVector>newHashMap();
+		computeCurrent();
 		addMouseMotionListener(this);
 		addMouseListener(this);
 	}
@@ -89,7 +96,8 @@ public class FusionPanel extends JPanel implements MouseInputListener {
 		
 		drawAxes(g2);
 		drawPolywell(g2);
-		drawField(g2);
+		//drawField(g2);
+		drawCurrent(g2);
 	}
 	
 	public void drawAxes(Graphics2D g) {
@@ -153,6 +161,26 @@ public class FusionPanel extends JPanel implements MouseInputListener {
 		
 	}
 	
+	public void computeCurrent() {
+		CurrentDensityFunction f = field.getCurrentDensityFunction();
+		double step = .5;
+		for (double x = -8; x < 8; x += step) {
+			for (double y = -8; y < 8; y += step) {
+				for (double z = -8; z < 8; z += step) {
+					DoubleVector v = new DoubleVector(x, y, z);
+					System.out.println(v);
+					currentMap.put(v, f.apply(v));
+				}
+			}
+		}
+	}
+	
+	public void drawCurrent(Graphics2D g) {
+		for (DoubleVector v : currentMap.keySet()) {
+			drawVector(g, v, currentMap.get(v), Color.BLUE);
+		}
+	}
+	
 	public void drawField(Graphics2D g) {
 		HashMap<DoubleVector, DoubleVector> vectors = field.getResults();
 		
@@ -177,6 +205,9 @@ public class FusionPanel extends JPanel implements MouseInputListener {
 	}
 	
 	public void drawVector(Graphics2D g, DoubleVector o, DoubleVector x, Color c) {
+		if (x.norm() == 0.0) {
+			return;
+		}
 		int centerX = getWidth() / 2;
 		int centerY = getHeight() / 2;
 		DoubleVector center = new DoubleVector(centerX, centerY);

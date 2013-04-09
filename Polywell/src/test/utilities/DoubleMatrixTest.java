@@ -162,4 +162,13 @@ public class DoubleMatrixTest {
 		DoubleVector b = new DoubleVector(1, 2, 3);
 		a.multiply(b);
 	}
+	
+	@Test
+	public void getRotationMatrixTest() {
+		DoubleVector a = new DoubleVector(1, 2, 3);
+		DoubleVector b = new DoubleVector(0, 0, 1);
+		DoubleMatrix rot = DoubleMatrix.getRotationMatrix(a, b);
+		System.out.println(rot);
+		assertEquals(b.normalize(), rot.multiply(a).normalize());
+	}
 }

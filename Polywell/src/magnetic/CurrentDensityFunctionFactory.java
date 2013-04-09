@@ -22,7 +22,7 @@ public class CurrentDensityFunctionFactory {
 		ranges.add(Pair.<Double, Double>of(center.getValue(2) - radius - thickness,
 				center.getValue(2) + radius + thickness));
 		
-		final DoubleMatrix matrix = DoubleMatrix.getRotationMatrix(direction, 
+		final DoubleMatrix matrix = DoubleMatrix.getRotationMatrix(direction.normalize(), 
 				new DoubleVector(0, 0, 1));
 		
 		CurrentDensityFunction f = new CurrentDensityFunction() {

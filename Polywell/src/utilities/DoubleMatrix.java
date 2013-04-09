@@ -124,28 +124,48 @@ public class DoubleMatrix implements Cloneable, Serializable {
 		if (a.getSize() != 3) {
 			throw new IllegalArgumentException("Size of vectors must be 3");
 		}
+		a = a.normalize();
+		b = b.normalize();
 		DoubleMatrix result = new DoubleMatrix(3, 3);
-		DoubleVector crossRotation = a.crossProduct(b);
+		DoubleVector crossRotation = a.crossProduct(b).normalize();
 		double dotRotation = a.dotProduct(b);
-		double norm = dotRotation * dotRotation + crossRotation.dotProduct(crossRotation);
-		crossRotation = crossRotation.divide(norm);
-		dotRotation /= norm;
-		result = result.setValue(0, 0,  1 - 2 * crossRotation.getValue(1) - 2 * crossRotation.getValue(2));
-		result = result.setValue(0, 1, 2 * crossRotation.getValue(0) * crossRotation.getValue(1) - 
-				2 * crossRotation.getValue(2) * dotRotation);
-		result = result.setValue(0, 2, 2 * crossRotation.getValue(0) * crossRotation.getValue(2) + 
-				2 * crossRotation.getValue(1) * dotRotation);
-		result = result.setValue(1, 0, 2 * crossRotation.getValue(0) * crossRotation.getValue(1) + 
-				2 * crossRotation.getValue(2) * dotRotation);
-		result = result.setValue(1, 1,  1 - 2 * crossRotation.getValue(0) - 2 * crossRotation.getValue(2));
-		result = result.setValue(1, 2, 2 * crossRotation.getValue(1) * crossRotation.getValue(2) - 
-				2 * crossRotation.getValue(0) * dotRotation);
-		result = result.setValue(2, 0, 2 * crossRotation.getValue(0) * crossRotation.getValue(2) - 
-				2 * crossRotation.getValue(1) * dotRotation);
-		result = result.setValue(2, 1, 2 * crossRotation.getValue(1) * crossRotation.getValue(2) + 
-				2 * crossRotation.getValue(0) * dotRotation);
-		result = result.setValue(2, 2,  1 - 2 * crossRotation.getValue(0) - 2 * crossRotation.getValue(1));
+		double cos = dotRotation;
+		double sin = Math.sqrt(1 - cos * cos);
+		double x = crossRotation.getValue(0);
+		double y = crossRotation.getValue(1);
+		double z = crossRotation.getValue(2);
+		
+		result = result.setValue(0, 0, 1 + (1 - cos) * (x * x - 1));
+		result = result.setValue(0, 1, -1 * z * sin + (1 - cos) * x * y);
+		result = result.setValue(0, 2, y * sin + (1 - cos) * x * z);
+		result = result.setValue(1, 0, z * sin + (1-cos) * x * y);
+		result = result.setValue(1, 1, 1 + (1 - cos) * (y * y - 1));
+		result = result.setValue(1, 2, -1 * x * sin + (1 - cos) * y * z);
+		result = result.setValue(2, 0, -1 * y * sin + (1 - cos) * x * z);
+		result = result.setValue(2, 1, x * sin + (1 - cos) * y * z);
+		result = result.setValue(2, 2, 1 + (1 - cos) * (z * z - 1));
 		return result;
+		
+		
+//		double norm = Math.sqrt(dotRotation * dotRotation + crossRotation.dotProduct(crossRotation));
+//		crossRotation = crossRotation.divide(norm);
+//		dotRotation /= norm;
+//		result = result.setValue(0, 0,  1 - 2 * crossRotation.getValue(1) - 2 * crossRotation.getValue(2));
+//		result = result.setValue(0, 1, 2 * crossRotation.getValue(0) * crossRotation.getValue(1) - 
+//				2 * crossRotation.getValue(2) * dotRotation);
+//		result = result.setValue(0, 2, 2 * crossRotation.getValue(0) * crossRotation.getValue(2) + 
+//				2 * crossRotation.getValue(1) * dotRotation);
+//		result = result.setValue(1, 0, 2 * crossRotation.getValue(0) * crossRotation.getValue(1) + 
+//				2 * crossRotation.getValue(2) * dotRotation);
+//		result = result.setValue(1, 1,  1 - 2 * crossRotation.getValue(0) - 2 * crossRotation.getValue(2));
+//		result = result.setValue(1, 2, 2 * crossRotation.getValue(1) * crossRotation.getValue(2) - 
+//				2 * crossRotation.getValue(0) * dotRotation);
+//		result = result.setValue(2, 0, 2 * crossRotation.getValue(0) * crossRotation.getValue(2) - 
+//				2 * crossRotation.getValue(1) * dotRotation);
+//		result = result.setValue(2, 1, 2 * crossRotation.getValue(1) * crossRotation.getValue(2) + 
+//				2 * crossRotation.getValue(0) * dotRotation);
+//		result = result.setValue(2, 2,  1 - 2 * crossRotation.getValue(0) - 2 * crossRotation.getValue(1));
+//		return result;
 	}
 	
 	@Override
