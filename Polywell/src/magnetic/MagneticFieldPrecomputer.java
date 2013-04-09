@@ -6,6 +6,10 @@ import java.util.List;
 import utilities.DoubleVector;
 import utilities.Pair;
 
+/**
+ * Precomputes a magnetic field and stores to file
+ * @author Ryan Dewey
+ */
 public class MagneticFieldPrecomputer {
 
 	public static void main(String[] args) {
@@ -16,19 +20,23 @@ public class MagneticFieldPrecomputer {
 		Pair<CurrentDensityFunction, List<Pair<Double, Double>>> polywell = 
 				CurrentDensityFunctionFactory.getCubicPolywellFunction(radius, thickness, magnitude);
 		MagneticField field = new MagneticField(polywell.getA(), polywell.getB(), filename);
-		//field.clear();
+		//field.clear(); //Uncomment to remove old data
 		
-		int gridPoints = 30;
+		int gridPoints = 30; //Number of points to compute in each dimension
+		double rangeFactor = 2; //Factor to extend range past outside of polywell
 		Pair<Double, Double> xRange = polywell.getB().get(0);
 		Pair<Double, Double> yRange = polywell.getB().get(1);
 		Pair<Double, Double> zRange = polywell.getB().get(2);
-		DoubleVector gridWidths = new DoubleVector((xRange.getB() - xRange.getA()) * 2 / gridPoints,
-				(yRange.getB() - yRange.getA()) * 2/ gridPoints,
-				(zRange.getB() - zRange.getA()) * 2/ gridPoints);
+		DoubleVector gridWidths = new DoubleVector((xRange.getB() - xRange.getA()) * rangeFactor / gridPoints,
+				(yRange.getB() - yRange.getA()) * rangeFactor/ gridPoints,
+				(zRange.getB() - zRange.getA()) * rangeFactor/ gridPoints);
 		
-		for (double x = xRange.getA() * 2; x <= xRange.getB() * 2; x += gridWidths.getValue(0)) {
-			for (double y = yRange.getA() * 2; y <= yRange.getB() * 2; y += gridWidths.getValue(1)) {
-				for (double z = zRange.getA() * 2; z <= zRange.getB() * 2; z += gridWidths.getValue(2)) {
+		for (double x = xRange.getA() * rangeFactor; x <= xRange.getB() * rangeFactor; 
+				x += gridWidths.getValue(0)) {
+			for (double y = yRange.getA() * rangeFactor; y <= yRange.getB() * rangeFactor; 
+					y += gridWidths.getValue(1)) {
+				for (double z = zRange.getA() * rangeFactor; z <= zRange.getB() * rangeFactor; 
+						z += gridWidths.getValue(2)) {
 					DoubleVector coord = new DoubleVector(x, y, z);
 					System.out.println(coord);
 					field.getField(coord);

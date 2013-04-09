@@ -1,0 +1,34 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf340
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs24 \cf0 How to use to compute the magnetic field of a polywell and the paths of particles inside.\
+\
+Prerequisites:\
+Java 1.6\
+Guava library from Google\
+JUnit testing library\
+\
+Computation of magnetic field:\
+1. Open the class MagneticFieldPrecomputer\
+2. Change filename, parameters of polywell at top of main function\
+3. Change number of grid points to calculate field at on line 25.\
+4. If necessary, alter range for computation. Default ranges compute the field from the origin to twice as far as the extent of current in the polywell.\
+5. Run file. Default number of points for monte-carlo integration is 100000. This can be changed in the MagneticField class. Note: this may take a long time for computation. On a 4GHz intel i7 processor with 8Gb ram available, 30 grid points takes 5-6 hours to run.\
+\
+Computation of particle path:\
+1. Open the class ParticlePathPrecomputer\
+2. Change polywell parameters as with magnetic field.\
+3. Magnetic field strength can be altered either by changing the magnitude of the current or by\
+	directly multiplying by a scale factor when computing the force on line 45.\
+4. Enter beginning state and file to store the path in.\
+5. Run file. Again, the integration parameters can be changed in MagneticField, and this may take an extremely long time to compute.\
+\
+Display of data:\
+1. Open the classes FusionWindow and FusionPanel\
+2. In FusionWindow, enter the parameters used to compute the magnetic field. This will load the relevant file if it exists. (Filename on line 50)\
+3. In FusionPanel, the file for drawing a path can be specified in the drawPath method at line 245.\
+4. The paintComponent method specifies what to draw. Comment out any lines from 147-150 if you only want to draw specific pieces of the polywell. drawAxes draws the axes of the plot, drawField plots the magnetic field, drawCurrent plots the current flow inside each of the polywell rings, and drawPath draws the path from the specified file. Colors can also be modified.\
+5. Run file FusionMain to start. View can be rotated with the mouse.}

@@ -5,9 +5,11 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Scanner;
 
 import javax.swing.JPanel;
 import javax.swing.event.MouseInputListener;
@@ -17,8 +19,13 @@ import magnetic.MagneticField;
 import utilities.DoubleVector;
 import utilities.Pair;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+/**
+ * Panel which renders and displays Polywell data
+ * @author Ryan Dewey
+ */
 public class FusionPanel extends JPanel implements MouseInputListener {
 	public static final DoubleVector DEFAULT_VIEW_DIRECTION = new DoubleVector(0, 1, 0);
 	public static final DoubleVector DEFAULT_UP_DIRECTION = new DoubleVector(0, 0, 1);
@@ -40,22 +47,50 @@ public class FusionPanel extends JPanel implements MouseInputListener {
 
 	private HashMap<DoubleVector, DoubleVector> currentMap;
 	
+	/**
+	 * Creates an empty FusionPanel
+	 */
 	public FusionPanel() {
 		this(null, null, 0, new DoubleVector(0, 0, 0), new DoubleVector(0, 1, 0));
 	}
 
+	/**
+	 * Creates a FusionPanel with the given parameters. Uses default view direction (y-axis)
+	 * @param field magnetic field
+	 * @param plotRanges range of plot
+	 * @param gridPoints number of points to plot field over
+	 * @param centerPoint center of plot
+	 */
 	public FusionPanel(MagneticField field, List<Pair<Double, Double>> plotRanges, int gridPoints,
 			DoubleVector centerPoint) {
 		this(field, plotRanges.get(0), plotRanges.get(1), plotRanges.get(2), gridPoints, centerPoint, 
 				DEFAULT_VIEW_DIRECTION);
 	}
 	
+	/**
+	 * Creates a FusionPanel with the given parameters
+	 * @param field magnetic field
+	 * @param plotRanges range of plot
+	 * @param gridPoints number of points to plot field over
+	 * @param centerPoint center of plot
+	 * @param viewDirection initial viewing direction
+	 */
 	public FusionPanel(MagneticField field, List<Pair<Double, Double>> plotRanges, int gridPoints,
 			DoubleVector centerPoint, DoubleVector viewDirection) {
 		this(field, plotRanges.get(0), plotRanges.get(1), plotRanges.get(2), gridPoints, centerPoint, 
 				viewDirection);
 	}
 	
+	/**
+	 * Creates a FusionPanel with the given parameters
+	 * @param field magnetic field
+	 * @param xRange range of x axis
+	 * @param yRange range of y axis
+	 * @param zRange range of z axis
+	 * @param gridPoints number of points to plot field over
+	 * @param centerPoint center of plot
+	 * @param viewDirection initial viewing direction
+	 */
 	public FusionPanel(MagneticField field, Pair<Double, Double> xRange, Pair<Double, Double> yRange,
 			Pair<Double, Double> zRange, int gridPoints, DoubleVector centerPoint, DoubleVector viewDirection) {
 		super();
@@ -77,18 +112,33 @@ public class FusionPanel extends JPanel implements MouseInputListener {
 		addMouseListener(this);
 	}
 	
+	/**
+	 * Sets the x range of the plot
+	 * @param xRange the new x-axis range
+	 */
 	public void setXRange(Pair<Double, Double> xRange) {
 		this.xRange = xRange;
 	}
 	
+	/**
+	 * Sets the y range of the plot
+	 * @param yRange the new y-axis range
+	 */
 	public void setYRange(Pair<Double, Double> yRange) {
 		this.yRange = yRange;
 	}
 	
+	/**
+	 * Sets the z range of the plot
+	 * @param zRange the new z-axis range
+	 */
 	public void setZRange(Pair<Double, Double> zRange) {
 		this.zRange = zRange;
 	}
 
+	/**
+	 * Displays the polywell data
+	 */
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -97,8 +147,13 @@ public class FusionPanel extends JPanel implements MouseInputListener {
 		drawAxes(g2);
 		drawField(g2);
 		drawCurrent(g2);
+		drawPath(g2);
 	}
 	
+	/**
+	 * Draws the x, y, and z axis
+	 * @param g graphics object to draw to
+	 */
 	public void drawAxes(Graphics2D g) {
 		int centerX = getWidth() / 2;
 		int centerY = getHeight() / 2;
@@ -153,6 +208,9 @@ public class FusionPanel extends JPanel implements MouseInputListener {
 				(int) zMax.getValue(0).doubleValue(), (int) zMax.getValue(1).doubleValue());
 	}
 	
+	/**
+	 * Precomputes the current for rendering.
+	 */
 	public void computeCurrent() {
 		CurrentDensityFunction f = field.getCurrentDensityFunction();
 		double step = .5;
@@ -167,25 +225,54 @@ public class FusionPanel extends JPanel implements MouseInputListener {
 		}
 	}
 	
+	/**
+	 * Draws the current flow
+	 * @param g the graphics object to draw to
+	 */
 	public void drawCurrent(Graphics2D g) {
 		for (DoubleVector v : currentMap.keySet()) {
 			drawVector(g, v, currentMap.get(v), Color.GREEN);
 		}
 	}
 	
+	/**
+	 * Draws the given path of a particle inside the polywell
+	 * @param g the graphics object to draw to
+	 */
+	public void drawPath(Graphics2D g) {
+		List<DoubleVector> path = Lists.<DoubleVector>newArrayList();
+		try {
+			Scanner in = new Scanner(new File("hundredth2.path"));
+			while (in.hasNextLine()) {
+				Scanner line = new Scanner(in.nextLine());
+				DoubleVector next = new DoubleVector(line.nextDouble(), line.nextDouble(), line.nextDouble());
+				path.add(next);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		for (int i = 0; i < path.size() - 1; i++) {
+			drawVector(g, path.get(i), path.get(i + 1).subtract(path.get(i)), Color.BLACK);
+		}
+	}
+	
+	/**
+	 * Draws the given magnetic field
+	 * @param g the graphics object to draw to
+	 */
 	public void drawField(Graphics2D g) {
 		HashMap<DoubleVector, DoubleVector> vectors = field.getResults();
 		
 		for (DoubleVector v: vectors.keySet()) {
 			drawVector(g, v, vectors.get(v), getColor(vectors.get(v)));
 		}
- 		try {
-			field.storeResults();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 	
+	/**
+	 * Gets the color for the given vector (scaled from blue for small vectors to red for large vectors)
+	 * @param v the given vector
+	 * @return the color to draw the given vector
+	 */
 	public Color getColor(DoubleVector v) {
 		double norm = v.norm();
 		if (norm > MAX_COLOR_NORM) {
@@ -196,6 +283,13 @@ public class FusionPanel extends JPanel implements MouseInputListener {
 		return new Color(red, 0, blue);
 	}
 	
+	/**
+	 * Draws the given vector from the given point with the given color
+	 * @param g the graphics object to draw to
+	 * @param o the origin point of the vector
+	 * @param x the vector
+	 * @param c color of the vector
+	 */
 	public void drawVector(Graphics2D g, DoubleVector o, DoubleVector x, Color c) {
 		if (x.norm() == 0.0) {
 			return;
@@ -222,6 +316,9 @@ public class FusionPanel extends JPanel implements MouseInputListener {
 				(int) x.getValue(0).doubleValue(), (int) x.getValue(1).doubleValue());
 	}
 
+	/**
+	 * Rotates the screen upon click and drag
+	 */
 	@Override
 	public void mouseDragged(MouseEvent event) {
 		DoubleVector currentPoint = new DoubleVector(event.getX(), event.getY());
@@ -248,6 +345,9 @@ public class FusionPanel extends JPanel implements MouseInputListener {
 	@Override
 	public void mouseExited(MouseEvent event) {}
 
+	/**
+	 * Stores initial position for rotation
+	 */
 	@Override
 	public void mousePressed(MouseEvent event) {
 		clickPoint = new DoubleVector(event.getX(), event.getY());

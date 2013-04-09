@@ -15,12 +15,19 @@ import utilities.Pair;
 
 import com.google.common.collect.Lists;
 
+/**
+ * Loads b-field and starts rendering of the polywell.
+ * @author Ryan Dewey
+ */
 public class FusionWindow {
 	public static final int DEFAULT_WINDOW_WIDTH = 640;
 	public static final int DEFAULT_WINDOW_HEIGHT = 480;
 	
 	private JFrame frame;
 	
+	/**
+	 * Creates new FusionWindow and loads magnetic field information from file.
+	 */
 	public FusionWindow() {
 		frame = new JFrame("Polywell Simulation");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -29,8 +36,8 @@ public class FusionWindow {
         frame.setLocation(((int) screenSize.getWidth() - DEFAULT_WINDOW_WIDTH) / 2, 
         		((int) screenSize.getHeight() - DEFAULT_WINDOW_HEIGHT) / 2);
         
-		double radius = 5.0;
-		double thickness = 1.0;
+		double radius = 4.0;
+		double thickness = 0.5;
 		double magnitude = 0.7;
         Pair<CurrentDensityFunction, List<Pair<Double, Double>>> temp = 
         		CurrentDensityFunctionFactory.getCubicPolywellFunction(radius, thickness, magnitude);

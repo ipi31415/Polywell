@@ -7,9 +7,20 @@ import com.google.common.base.Function;
 import utilities.DoubleVector;
 import utilities.Pair;
 
+/**
+ * Provides methods for numerical integration
+ * @author Ryan Dewey
+ */
 public class Integrator {
 	private static double EPSILON = 1.0E-7;
 	
+	/**
+	 * Arbitrary dimensional trapezoidal integration method
+	 * @param f function to integrate
+	 * @param ranges range to integrate over
+	 * @param accuracy desired accuracy
+	 * @return result of integration
+	 */
 	public static DoubleVector integrateTrap(Function<DoubleVector, DoubleVector> f, 
 			List<Pair<Double, Double>> ranges, double accuracy) {
 		int dim = ranges.size();
@@ -52,6 +63,13 @@ public class Integrator {
 		return total;
 	}
 	
+	/**
+	 * Arbitrary dimensional Monte-Carlo integration method
+	 * @param f function to integrate
+	 * @param ranges range to integrate over
+	 * @param minRuns number of points to use in the Monte-Carlo integration
+	 * @return result of integration
+	 */
 	public static DoubleVector integrateMonteCarlo(Function<DoubleVector, DoubleVector> f, 
 			List<Pair<Double, Double>> ranges, int minRuns) {
 		int dim = ranges.size();
@@ -77,6 +95,13 @@ public class Integrator {
 		return total.multiply(volume).divide(num);
 	}
 	
+	/**
+	 * Returns number of elements on the border of the integration range for trapezoidal method
+	 * @param check vector to check for border elements
+	 * @param min minimum point of each axis
+	 * @param max maximum point of each axis
+	 * @return number of border elements
+	 */
 	public static int numMinMax(DoubleVector check, DoubleVector min, DoubleVector max) {
 		int dim = check.getSize();
 		if (min.getSize() != dim || max.getSize() != dim) {
@@ -92,6 +117,12 @@ public class Integrator {
 		return count;
 	}
 	
+	/**
+	 * Gets a random vector in the given range
+	 * @param min minimum point of each axis
+	 * @param max maximum point of each axis
+	 * @return random vector with each element between min and max
+	 */
 	public static DoubleVector getRandomInRange(DoubleVector min, DoubleVector max) {
 		int dim = min.getSize();
 		if (dim != max.getSize()) {
@@ -105,6 +136,12 @@ public class Integrator {
 		return result;
 	}
 	
+	/**
+	 * Gets the volume contained in the given range
+	 * @param min minimum point of each axis
+	 * @param max maximum point of each axis
+	 * @return total volume
+	 */
 	public static double getVolume(DoubleVector min, DoubleVector max) {
 		int dim = min.getSize();
 		if (dim != max.getSize()) {

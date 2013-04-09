@@ -5,8 +5,21 @@ import utilities.Pair;
 
 import com.google.common.base.Function;
 
+/**
+ * Methods for obtaining a runge-kutta approximation for solving an ODE
+ * @author Ryan Dewey
+ */
 public class RungeKutta {
 	
+	/**
+	 * Computes a 4th order runge kutta approximation of the next state given the current state, time,
+	 * timestep, and derivatives function.
+	 * @param x current state vector
+	 * @param t current time
+	 * @param tau current timestep
+	 * @param derivs derivative function
+	 * @return next state vector
+	 */
 	public static DoubleVector rungeKutta4(DoubleVector x, double t, double tau, 
 			Function<Pair<DoubleVector, Double>, DoubleVector> derivs) {
 		double halfTau = 0.5 * tau;

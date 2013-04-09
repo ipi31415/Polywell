@@ -9,7 +9,21 @@ import utilities.Pair;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
+/**
+ * Generates current densities for common polywell current configurations
+ * @author Ryan Dewey
+ */
 public class CurrentDensityFunctionFactory {
+	/**
+	 * Returns the magnetic field of a torus of given parameters
+	 * @param radius distance from center of torus to center of ring
+	 * @param thickness distance from center of ring to edge of ring
+	 * @param center center point of torus
+	 * @param direction vector along central axis of torus
+	 * @param magnitude magnitude of current flow within torus
+	 * @return CurrentDensityFunction describing this current flow and range describing maximum extent
+	 * 			of the current
+	 */
 	public static Pair<CurrentDensityFunction, List<Pair<Double, Double>>> 
 			getTorusDensityFunction(final double radius, final double thickness, final DoubleVector center, 
 					final DoubleVector direction, final double magnitude) {
@@ -47,7 +61,15 @@ public class CurrentDensityFunctionFactory {
 				ImmutableList.<Pair<Double, Double>>copyOf(ranges));
 	}
 
-	
+	/**
+	 * Returns a current density function describing a cubic polywell configuration with the given
+	 * parameters. Each of the 6 sides is a single torus
+	 * @param radius radius of the rings for the polywell
+	 * @param thickness thickness of the rings for the polywell
+	 * @param magnitude magnitude of the current flow for the polywell
+	 * @return CurrentDensityFunction describing the current flow for this polywell and range 
+	 * 			describing maximum extent of the current
+	 */
 	public static Pair<CurrentDensityFunction, List<Pair<Double, Double>>> getCubicPolywellFunction(
 			double radius, double thickness, double magnitude) {
 		double centerDist = radius + Math.sqrt(2) * thickness;
@@ -81,6 +103,11 @@ public class CurrentDensityFunctionFactory {
 		return Pair.of(combined, totalRange);
 	}
 	
+	/**
+	 * Gets the bounding box for the given ranges.
+	 * @param rangeLists ranges to combine
+	 * @return smallest range which contains all given ranges.
+	 */
 	public static List<Pair<Double, Double>> combineRanges(List<List<Pair<Double, Double>>> rangeLists) {
 		List<Pair<Double, Double>> result = Lists.<Pair<Double, Double>>newArrayList();
 		for (int i = 0; i < rangeLists.get(0).size(); i++) {

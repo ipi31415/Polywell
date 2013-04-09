@@ -13,9 +13,14 @@ import com.google.common.collect.Lists;
 
 import diffeq.RungeKutta;
 
+/**
+ * Precomputes the path of a particle. Displays state and kinetic energy at each point.
+ * @author Ryan Dewey
+ */
 public class ParticlePathPrecomputer {
 	
 	public static void main(String[] args) {
+		//Name of B-field to load
 		String filename = "Cubic Polywell30";
 		double radius = 4;
 		double thickness = 0.5;
@@ -41,11 +46,15 @@ public class ParticlePathPrecomputer {
 			}
 		};
 		
-		DoubleVector state = new DoubleVector(0, 0, 0, 1, 2, 3);
+		//Beginning point and speed
+		DoubleVector state = new DoubleVector(0, 0, 0, 1, 0.1, .4);
+		
+		//File to store the path data in
+		String pathfile = "hundredth2.path";
 
 		List<DoubleVector> path = Lists.<DoubleVector>newArrayList();
 		try {
-			Scanner in = new Scanner(new File("tenth.path"));
+			Scanner in = new Scanner(new File(pathfile));
 			boolean check = false;
 			while (in.hasNextLine()) {
 				Scanner line = new Scanner(in.nextLine());
@@ -64,8 +73,9 @@ public class ParticlePathPrecomputer {
 			e.printStackTrace();
 		}
 		
-		int numSteps = 100;
-		double timeStep = .1;
+		//Number of steps to compute, timestep to use
+		int numSteps = 3500;
+		double timeStep = .01;
 		if (path.size() == 0) {
 			path.add(state);
 		} else {
@@ -75,9 +85,12 @@ public class ParticlePathPrecomputer {
 			state = RungeKutta.rungeKutta4(state, timeStep * i, timeStep, deriv);
 			path.add(state);
 			System.out.println(state);
+			System.out.println(state.getValue(3) * state.getValue(3) + 
+					state.getValue(4) * state.getValue(4) + 
+					state.getValue(5) * state.getValue(5));
 		}
 		try {
-			PrintWriter out = new PrintWriter("tenth.path");
+			PrintWriter out = new PrintWriter(pathfile);
 			for (DoubleVector p : path) {
 				out.println(p.getValue(0) + " " + 
 						p.getValue(1) + " " +
