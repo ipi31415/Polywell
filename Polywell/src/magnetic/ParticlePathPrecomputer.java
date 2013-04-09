@@ -34,13 +34,14 @@ public class ParticlePathPrecomputer {
 				DoubleVector v = new DoubleVector(xv.getValue(3), xv.getValue(4),
 						xv.getValue(5));
 				DoubleVector b = field.getField(x);
-				DoubleVector force = b.crossProduct(v);
+				//System.out.println(b);
+				DoubleVector force = b.crossProduct(v).multiply(10);
 				return new DoubleVector(v.getValue(0), v.getValue(1), v.getValue(2), 
 						force.getValue(0), force.getValue(1), force.getValue(2));
 			}
 		};
 		
-		DoubleVector state = new DoubleVector(radius, 0.1, 0.1, -.5, 0, 0);
+		DoubleVector state = new DoubleVector(0, 0, 0, 1, 2, 3);
 
 		List<DoubleVector> path = Lists.<DoubleVector>newArrayList();
 		try {
@@ -63,8 +64,8 @@ public class ParticlePathPrecomputer {
 			e.printStackTrace();
 		}
 		
-		int numSteps = 1000;
-		double timeStep = .01;
+		int numSteps = 100;
+		double timeStep = .1;
 		if (path.size() == 0) {
 			path.add(state);
 		} else {

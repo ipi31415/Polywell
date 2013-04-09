@@ -95,8 +95,7 @@ public class FusionPanel extends JPanel implements MouseInputListener {
 		Graphics2D g2 = (Graphics2D) g.create();
 		
 		drawAxes(g2);
-		drawPolywell(g2);
-		//drawField(g2);
+		drawField(g2);
 		drawCurrent(g2);
 	}
 	
@@ -154,13 +153,6 @@ public class FusionPanel extends JPanel implements MouseInputListener {
 				(int) zMax.getValue(0).doubleValue(), (int) zMax.getValue(1).doubleValue());
 	}
 	
-	public void drawPolywell(Graphics2D g) {
-		double radius = 4;
-		double thickness = .5;
-		double centerDistance = radius + thickness * Math.sqrt(2);
-		
-	}
-	
 	public void computeCurrent() {
 		CurrentDensityFunction f = field.getCurrentDensityFunction();
 		double step = .5;
@@ -177,7 +169,7 @@ public class FusionPanel extends JPanel implements MouseInputListener {
 	
 	public void drawCurrent(Graphics2D g) {
 		for (DoubleVector v : currentMap.keySet()) {
-			drawVector(g, v, currentMap.get(v), Color.BLUE);
+			drawVector(g, v, currentMap.get(v), Color.GREEN);
 		}
 	}
 	

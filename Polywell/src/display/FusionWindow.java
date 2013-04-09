@@ -29,8 +29,6 @@ public class FusionWindow {
         frame.setLocation(((int) screenSize.getWidth() - DEFAULT_WINDOW_WIDTH) / 2, 
         		((int) screenSize.getHeight() - DEFAULT_WINDOW_HEIGHT) / 2);
         
-        DoubleVector center = new DoubleVector(0, 0, 0);
-		DoubleVector direction = new DoubleVector(0, 1, 0);
 		double radius = 5.0;
 		double thickness = 1.0;
 		double magnitude = 0.7;

@@ -53,22 +53,22 @@ public class CurrentDensityFunctionFactory {
 		double centerDist = radius + Math.sqrt(2) * thickness;
 		Pair<CurrentDensityFunction, List<Pair<Double, Double>>> torus1 = 
 				CurrentDensityFunctionFactory.getTorusDensityFunction(radius, thickness, 
-						new DoubleVector(centerDist, 0, 0), new DoubleVector(1, 0, 0), magnitude);
+						new DoubleVector(centerDist, 0, 0), new DoubleVector(-1, 0, 0), magnitude);
 		Pair<CurrentDensityFunction, List<Pair<Double, Double>>> torus2 = 
 				CurrentDensityFunctionFactory.getTorusDensityFunction(radius, thickness, 
-						new DoubleVector(-centerDist, 0, 0), new DoubleVector(-1, 0, 0), magnitude);
+						new DoubleVector(-centerDist, 0, 0), new DoubleVector(1, 0, 0), magnitude);
 		Pair<CurrentDensityFunction, List<Pair<Double, Double>>> torus3 = 
 				CurrentDensityFunctionFactory.getTorusDensityFunction(radius, thickness, 
-						new DoubleVector(0, centerDist, 0), new DoubleVector(0, 1, 0), magnitude);
+						new DoubleVector(0, centerDist, 0), new DoubleVector(0, -1, 0), magnitude);
 		Pair<CurrentDensityFunction, List<Pair<Double, Double>>> torus4 = 
 				CurrentDensityFunctionFactory.getTorusDensityFunction(radius, thickness, 
-						new DoubleVector(0, -centerDist, 0), new DoubleVector(0, -1, 0), magnitude);
+						new DoubleVector(0, -centerDist, 0), new DoubleVector(0, 1, 0), magnitude);
 		Pair<CurrentDensityFunction, List<Pair<Double, Double>>> torus5 = 
 				CurrentDensityFunctionFactory.getTorusDensityFunction(radius, thickness, 
-						new DoubleVector(0, 0, centerDist), new DoubleVector(0, 0, 1), magnitude);
+						new DoubleVector(0, 0, centerDist), new DoubleVector(0, 0, -1), magnitude);
 		Pair<CurrentDensityFunction, List<Pair<Double, Double>>> torus6 = 
 				CurrentDensityFunctionFactory.getTorusDensityFunction(radius, thickness, 
-						new DoubleVector(0, 0, -centerDist), new DoubleVector(0, 0, -1), magnitude);
+						new DoubleVector(0, 0, -centerDist), new DoubleVector(0, 0, 1), magnitude);
 		CurrentDensityFunction combined = CurrentDensityFunction.addFunctions(
 				torus1.getA(), torus2.getA(), torus3.getA(), torus4.getA(), torus5.getA(), torus6.getA());
 //		@SuppressWarnings("unchecked")
